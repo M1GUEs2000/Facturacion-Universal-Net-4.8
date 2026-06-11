@@ -1,0 +1,60 @@
+# Mapeo de archivos fuente → nodos del vault de Obsidian
+# Vault: D:\Obsidian\Bovedá\proyectos\facturacion-universal-net48\nodos\
+# Actualizar cuando se agreguen archivos significativos a un módulo.
+#
+# NOTA: proyecto aún no scaffoldeado (planificado). Los patrones son genéricos
+# por carpeta según la estructura definida en arquitectura-facturacion-universal-net48.md.
+# Reemplazar por rutas de archivo exactas a medida que se creen los nodos con /nodo.
+
+project: facturacion-universal-net48
+
+mappings:
+  # --- Core (dominio puro) ---
+  - pattern: "Facturacion.Core/CasosDeUso/Comun/**"
+    node: "flujo-core"
+    vault_path: "proyectos/facturacion-universal-net48/nodos/flujo-core.md"
+  - pattern: "Facturacion.Core/CasosDeUso/Facturas/**"
+    node: "flujo-facturas"
+    vault_path: "proyectos/facturacion-universal-net48/nodos/flujo-facturas.md"
+  - pattern: "Facturacion.Core/Metodos/GeneradorClaveAcceso.cs"
+    node: "flujo-core"
+    vault_path: "proyectos/facturacion-universal-net48/nodos/flujo-core.md"
+  - pattern: "Facturacion.Core/**"
+    node: "flujo-core"
+    vault_path: "proyectos/facturacion-universal-net48/nodos/flujo-core.md"
+
+  # --- Infraestructura ---
+  - pattern: "Facturacion.Infraestructura/Servicios/ServicioXml*"
+    node: "flujo-facturas"
+    vault_path: "proyectos/facturacion-universal-net48/nodos/flujo-facturas.md"
+  - pattern: "Facturacion.Infraestructura/Servicios/ServicioFirma*"
+    node: "flujo-infraestructura"
+    vault_path: "proyectos/facturacion-universal-net48/nodos/flujo-infraestructura.md"
+  - pattern: "Facturacion.Infraestructura/Servicios/ServicioSri*"
+    node: "funcionamiento-sri"
+    vault_path: "proyectos/facturacion-universal-net48/nodos/funcionamiento-sri.md"
+  - pattern: "Facturacion.Infraestructura/Servicios/ServicioPdf*"
+    node: "flujo-ride"
+    vault_path: "proyectos/facturacion-universal-net48/nodos/flujo-ride.md"
+  - pattern: "Facturacion.Infraestructura/Persistencia/**"
+    node: "flujo-infraestructura"
+    vault_path: "proyectos/facturacion-universal-net48/nodos/flujo-infraestructura.md"
+  - pattern: "Facturacion.Infraestructura/Scripts/*.sql"
+    node: "bd-facturacion"
+    vault_path: "proyectos/facturacion-universal-net48/nodos/bd-facturacion.md"
+  - pattern: "Facturacion.Infraestructura/**"
+    node: "flujo-infraestructura"
+    vault_path: "proyectos/facturacion-universal-net48/nodos/flujo-infraestructura.md"
+
+  # --- API ---
+  - pattern: "Facturacion.Api/Auth/**"
+    node: "flujo-api"
+    vault_path: "proyectos/facturacion-universal-net48/nodos/flujo-api.md"
+  - pattern: "Facturacion.Api/**"
+    node: "flujo-api"
+    vault_path: "proyectos/facturacion-universal-net48/nodos/flujo-api.md"
+
+  # --- Tests ---
+  - pattern: "Facturacion.Tests/**"
+    node: "flujo-tests"
+    vault_path: "proyectos/facturacion-universal-net48/nodos/flujo-tests.md"

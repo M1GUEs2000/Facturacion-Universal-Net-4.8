@@ -1,0 +1,23 @@
+# Secrets
+secrets.config
+*.p12
+*.pfx
+*.pem
+*.key
+
+# Build artifacts
+bin/
+obj/
+.vs/
+*.user
+packages/
+
+# Storage de archivos generados
+archivos/
+**/XMLFIRMADOS/
+**/XMLAUTORIZADOS/
+**/PDF/
+
+# OS
+Thumbs.db
+.DS_Store

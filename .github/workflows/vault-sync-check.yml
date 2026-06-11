@@ -1,0 +1,103 @@
+name: Vault Node Sync Check
+
+on:
+  push:
+    branches: ["**"]
+
+jobs:
+  check-vault-sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Obtener archivos cambiados
+        run: |
+          if git rev-parse HEAD~1 >/dev/null 2>&1; then
+            git diff --name-only HEAD~1 HEAD > /tmp/changed_files.txt
+            git diff --stat HEAD~1 HEAD > /tmp/diff_stat.txt
+          else
+            git show --name-only --format="" HEAD | tail -n +2 > /tmp/changed_files.txt
+            git show --stat HEAD | tail -5 > /tmp/diff_stat.txt
+          fi
+
+      - name: Mapear archivos a nodos del vault
+        run: |
+          python3 << 'PYEOF'
+          import yaml, fnmatch, os
+
+          with open('.github/node-map.yml') as f:
+              config = yaml.safe_load(f)
+
+          with open('/tmp/changed_files.txt') as f:
+              changed = [l.strip() for l in f if l.strip()]
+
+          with open('/tmp/diff_stat.txt') as f:
+              diff_stat = f.read().strip()
+
+          nodes = {}
+          unmapped = []
+
+          for file in changed:
+              matched = False
+              for m in config['mappings']:
+                  if fnmatch.fnmatch(file, m['pattern']):
+                      key = m['node']
+                      if key not in nodes:
+                          nodes[key] = {'vault_path': m['vault_path'], 'files': []}
+                      if file not in nodes[key]['files']:
+                          nodes[key]['files'].append(file)
+                      matched = True
+                      break
+              if not matched:
+                  unmapped.append(file)
+
+          project_name = config.get('project', 'proyecto')
+          lines = [f"## 🔄 Vault Sync Check — `{project_name}`", ""]
+
+          if not nodes and not unmapped:
+              lines.append("✅ Sin cambios en código — nodos del vault no afectados.")
+          else:
+              if nodes:
+                  lines.append("### 📋 Nodos que pueden necesitar actualización")
+                  lines.append("")
+                  for node, info in nodes.items():
+                      lines.append(f"**Nodo:** `{node}` → `{info['vault_path']}`")
+                      for f in info['files']:
+                          lines.append(f"- `{f}`")
+                      lines.append("")
+
+              if unmapped:
+                  lines.append("### ⚠️ Archivos sin nodo mapeado")
+                  lines.append("_Considerar agregar a `.github/node-map.yml`_")
+                  lines.append("")
+                  for f in unmapped:
+                      lines.append(f"- `{f}`")
+                  lines.append("")
+
+              if diff_stat:
+                  lines.append("### 📊 Stats del commit")
+                  lines.append(f"```\n{diff_stat}\n```")
+                  lines.append("")
+
+              lines.append("---")
+              lines.append("_Si el cambio es sustancial → abrir Obsidian y actualizar el nodo correspondiente._")
+
+          with open('/tmp/vault_comment.txt', 'w') as f:
+              f.write('\n'.join(lines))
+          PYEOF
+
+      - name: Postear comentario en el commit
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs')
+            const body = fs.readFileSync('/tmp/vault_comment.txt', 'utf8')
+            await github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body
+            })
