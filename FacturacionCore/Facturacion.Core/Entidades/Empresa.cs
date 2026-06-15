@@ -17,6 +17,8 @@ namespace Facturacion.Core.Entidades
 
         private Empresa() { }
 
+        public void AsignarId(int id) => Id = id;
+
         public static Empresa Crear(
             string ruc,
             string razonSocial,

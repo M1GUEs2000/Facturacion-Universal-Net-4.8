@@ -74,5 +74,75 @@ namespace Facturacion.Core.Entidades
                 UpdatedAt = DateTime.UtcNow
             };
         }
+
+        // Rehidratación completa desde persistencia — usado por FacturasRepositorio.
+        public static Factura Reconstituir(
+            int id,
+            string empresaRuc,
+            string claveAcceso,
+            Ambiente ambiente,
+            string estab,
+            string ptoEmi,
+            string secuencial,
+            DateTime fechaEmision,
+            EstadoSri estadoSri,
+            string razonSocialComprador,
+            string identificacionComprador,
+            TipoIdentificacion tipoIdentificacion,
+            string direccionComprador,
+            string guiaRemision,
+            decimal totalSinImpuestos,
+            decimal totalDescuento,
+            decimal totalIva,
+            decimal totalIce,
+            decimal importeTotal,
+            string moneda,
+            string numeroAutorizacion,
+            DateTimeOffset? fechaAutorizacion,
+            string sriRespuesta,
+            string xmlFirmadoPath,
+            string xmlAutorizadoPath,
+            string pdfPath,
+            DateTime createdAt,
+            DateTime updatedAt,
+            List<FacturaDetalle> detalles,
+            List<FormaPago> formasPago,
+            List<InfoAdicional> infoAdicional)
+        {
+            return new Factura
+            {
+                Id = id,
+                EmpresaRuc = empresaRuc,
+                ClaveAcceso = claveAcceso,
+                Ambiente = ambiente,
+                Estab = estab,
+                PtoEmi = ptoEmi,
+                Secuencial = secuencial,
+                FechaEmision = fechaEmision,
+                EstadoSri = estadoSri,
+                RazonSocialComprador = razonSocialComprador,
+                IdentificacionComprador = identificacionComprador,
+                TipoIdentificacionComprador = tipoIdentificacion,
+                DireccionComprador = direccionComprador,
+                GuiaRemision = guiaRemision,
+                TotalSinImpuestos = totalSinImpuestos,
+                TotalDescuento = totalDescuento,
+                TotalIva = totalIva,
+                TotalIce = totalIce,
+                ImporteTotal = importeTotal,
+                Moneda = moneda,
+                NumeroAutorizacion = numeroAutorizacion,
+                FechaAutorizacion = fechaAutorizacion,
+                SriRespuesta = sriRespuesta,
+                XmlFirmadoPath = xmlFirmadoPath,
+                XmlAutorizadoPath = xmlAutorizadoPath,
+                PdfPath = pdfPath,
+                CreatedAt = createdAt,
+                UpdatedAt = updatedAt,
+                Detalles = detalles ?? new List<FacturaDetalle>(),
+                FormasPago = formasPago ?? new List<FormaPago>(),
+                InfoAdicional = infoAdicional ?? new List<InfoAdicional>()
+            };
+        }
     }
 }

@@ -49,5 +49,39 @@ namespace Facturacion.Core.Entidades
                 IceValor = iceValor
             };
         }
+
+        // Rehidratación desde persistencia — usado por los repositorios.
+        public static FacturaDetalle Reconstituir(
+            int id,
+            int facturaId,
+            string codigoPrincipal,
+            string codigoAuxiliar,
+            string descripcion,
+            decimal cantidad,
+            decimal precioUnitario,
+            decimal descuento,
+            decimal precioTotalSinImpuesto,
+            CodigoIva codigoIva,
+            decimal ivaBase,
+            decimal ivaValor,
+            decimal iceValor)
+        {
+            return new FacturaDetalle
+            {
+                Id = id,
+                FacturaId = facturaId,
+                CodigoPrincipal = codigoPrincipal,
+                CodigoAuxiliar = codigoAuxiliar,
+                Descripcion = descripcion,
+                Cantidad = cantidad,
+                PrecioUnitario = precioUnitario,
+                Descuento = descuento,
+                PrecioTotalSinImpuesto = precioTotalSinImpuesto,
+                CodigoIva = codigoIva,
+                IvaBase = ivaBase,
+                IvaValor = ivaValor,
+                IceValor = iceValor
+            };
+        }
     }
 }

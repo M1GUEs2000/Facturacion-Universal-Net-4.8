@@ -26,6 +26,9 @@ namespace Facturacion.Core.Entidades
 
         protected DocumentoElectronico() { }
 
+        // Asigna el Id generado por la BD (IDENTITY) tras el INSERT.
+        public void AsignarId(int id) => Id = id;
+
         public void RegistrarXmlFirmado(string path)
         {
             XmlFirmadoPath = path;

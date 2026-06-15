@@ -16,6 +16,8 @@ namespace Facturacion.Core.Entidades
 
         private SecuencialSri() { }
 
+        public void AsignarId(int id) => Id = id;
+
         public static SecuencialSri Crear(string empresaRuc, string estab, string ptoEmi, TipoDocumentoSri tipoDocumento)
         {
             return new SecuencialSri

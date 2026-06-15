@@ -15,6 +15,8 @@ namespace Facturacion.Core.Entidades
 
         private ParametrosFacturacion() { }
 
+        public void AsignarId(int id) => Id = id;
+
         public static ParametrosFacturacion Crear(
             string empresaRuc,
             string estab,
