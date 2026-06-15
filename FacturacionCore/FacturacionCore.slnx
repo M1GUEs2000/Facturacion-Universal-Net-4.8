@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Facturacion.Api/Facturacion.Api.csproj" />
+  <Project Path="Facturacion.Core/Facturacion.Core.csproj" />
+  <Project Path="Facturacion.Infraestructura/Facturacion.Infraestructura.csproj" />
+  <Project Path="Facturacion.Tests/Facturacion.Tests.csproj" />
+</Solution>

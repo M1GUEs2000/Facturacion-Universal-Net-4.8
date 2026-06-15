@@ -21,3 +21,14 @@ archivos/
 # OS
 Thumbs.db
 .DS_Store
+
+# Test results
+TestResults/
+*.trx
+
+# NuGet
+*.nupkg
+*.snupkg
+
+# VS legacy
+*.suo
