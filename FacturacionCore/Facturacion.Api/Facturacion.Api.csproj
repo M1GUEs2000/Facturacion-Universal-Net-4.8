@@ -64,8 +64,11 @@
       <HintPath>..\packages\Microsoft.Bcl.TimeProvider.8.0.1\lib\net462\Microsoft.Bcl.TimeProvider.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=8.0.0.2, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.8.0.2\lib\net462\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="ErrorOr, Version=2.1.1.0, Culture=neutral, PublicKeyToken=null, processorArchitecture=MSIL">
+      <HintPath>..\packages\ErrorOr.2.1.1\lib\netstandard2.0\ErrorOr.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.IdentityModel.Abstractions, Version=8.19.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Abstractions.8.19.1\lib\net472\Microsoft.IdentityModel.Abstractions.dll</HintPath>
@@ -222,8 +225,20 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Auth\JwtHelper.cs" />
+    <Compile Include="Auth\JwtAuthorizeAttribute.cs" />
+    <Compile Include="Composition\LoggerTrace.cs" />
+    <Compile Include="Composition\CompositionRoot.cs" />
+    <Compile Include="Composition\ResolvedorControladores.cs" />
+    <Compile Include="Composition\ResultadosHttp.cs" />
+    <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Controllers\EmpresasController.cs" />
+    <Compile Include="Controllers\FacturasController.cs" />
+    <Compile Include="Controllers\ParametrosController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Models\Requests.cs" />
+    <Compile Include="Validators\EmitirFacturaValidator.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -281,6 +296,7 @@
     <Content Include="Scripts\jquery-3.7.0.slim.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Web.config" />
+    <Content Include="secrets.config.example" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -297,7 +313,16 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Facturacion.Core\Facturacion.Core.csproj">
+      <Project>{3F665F27-D54B-47F2-B051-188345F8AB6C}</Project>
+      <Name>Facturacion.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Facturacion.Infraestructura\Facturacion.Infraestructura.csproj">
+      <Project>{4448D840-442A-49F6-BD9A-511A82AFBB37}</Project>
+      <Name>Facturacion.Infraestructura</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\bootstrap.min.js.map" />

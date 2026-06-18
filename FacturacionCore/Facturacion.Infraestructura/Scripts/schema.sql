@@ -112,11 +112,11 @@ BEGIN
         direccion_comprador           NVARCHAR(300)  NULL,
         guia_remision                 VARCHAR(20)    NULL,
         -- totales
-        total_sin_impuestos           DECIMAL(12,2)  NOT NULL,
-        total_descuento               DECIMAL(12,2)  NOT NULL CONSTRAINT DF_facturas_totdesc DEFAULT (0),
-        total_iva                     DECIMAL(12,2)  NOT NULL CONSTRAINT DF_facturas_totiva  DEFAULT (0),
-        total_ice                     DECIMAL(12,2)  NOT NULL CONSTRAINT DF_facturas_totice  DEFAULT (0),
-        importe_total                 DECIMAL(12,2)  NOT NULL,
+        total_sin_impuestos           DECIMAL(18,6)  NOT NULL,
+        total_descuento               DECIMAL(18,6)  NOT NULL CONSTRAINT DF_facturas_totdesc DEFAULT (0),
+        total_iva                     DECIMAL(18,6)  NOT NULL CONSTRAINT DF_facturas_totiva  DEFAULT (0),
+        total_ice                     DECIMAL(18,6)  NOT NULL CONSTRAINT DF_facturas_totice  DEFAULT (0),
+        importe_total                 DECIMAL(18,6)  NOT NULL,
         moneda                        VARCHAR(10)    NOT NULL CONSTRAINT DF_facturas_moneda  DEFAULT ('DOLAR'),
         -- colecciones embebidas como JSON
         formas_pago                   NVARCHAR(MAX)  NULL,  -- [{codigo,total,plazo?,unidadTiempo?}]
@@ -165,14 +165,14 @@ BEGIN
         codigo_principal          VARCHAR(25)   NOT NULL,
         codigo_auxiliar           VARCHAR(25)   NULL,
         descripcion               NVARCHAR(300) NOT NULL,
-        cantidad                  DECIMAL(12,6) NOT NULL,
-        precio_unitario           DECIMAL(12,6) NOT NULL,
-        descuento                 DECIMAL(12,2) NOT NULL CONSTRAINT DF_detalle_descuento DEFAULT (0),
-        precio_total_sin_impuesto DECIMAL(12,2) NOT NULL,
+        cantidad                  DECIMAL(18,6) NOT NULL,
+        precio_unitario           DECIMAL(18,6) NOT NULL,
+        descuento                 DECIMAL(18,6) NOT NULL CONSTRAINT DF_detalle_descuento DEFAULT (0),
+        precio_total_sin_impuesto DECIMAL(18,6) NOT NULL,
         codigo_iva                INT           NOT NULL,  -- 0,2,3,4,5,6,7,8,10 (catálogo IVA SRI)
-        iva_base                  DECIMAL(12,2) NOT NULL,  -- precio_total_sin_impuesto + ice_valor
-        iva_valor                 DECIMAL(12,2) NOT NULL CONSTRAINT DF_detalle_ivavalor DEFAULT (0),
-        ice_valor                 DECIMAL(12,2) NOT NULL CONSTRAINT DF_detalle_icevalor DEFAULT (0),
+        iva_base                  DECIMAL(18,6) NOT NULL,  -- precio_total_sin_impuesto + ice_valor
+        iva_valor                 DECIMAL(18,6) NOT NULL CONSTRAINT DF_detalle_ivavalor DEFAULT (0),
+        ice_valor                 DECIMAL(18,6) NOT NULL CONSTRAINT DF_detalle_icevalor DEFAULT (0),
         CONSTRAINT PK_facturas_detalle  PRIMARY KEY (id),
         CONSTRAINT FK_detalle_factura   FOREIGN KEY (factura_id)
             REFERENCES dbo.facturas (id) ON DELETE CASCADE

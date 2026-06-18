@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+using System;
 using Facturacion.Core.Enums;
+using Facturacion.Core.Metodos;
 
 namespace Facturacion.Core.Entidades
 {
@@ -31,8 +32,11 @@ namespace Facturacion.Core.Entidades
             decimal iceValor = 0,
             string codigoAuxiliar = null)
         {
-            var precioTotalSinImpuesto = (cantidad * precioUnitario) - descuento;
+            // Cálculos con precisión de 6 decimales; la presentación (XML/PDF) formatea a 2.
+            var precioTotalSinImpuesto = Math.Round((cantidad * precioUnitario) - descuento, 6, MidpointRounding.AwayFromZero);
             var ivaBase = precioTotalSinImpuesto + iceValor;
+            var tarifa = TarifasIva.Porcentaje(codigoIva);
+            var ivaValor = Math.Round(ivaBase * tarifa / 100m, 6, MidpointRounding.AwayFromZero);
 
             return new FacturaDetalle
             {
@@ -45,7 +49,7 @@ namespace Facturacion.Core.Entidades
                 PrecioTotalSinImpuesto = precioTotalSinImpuesto,
                 CodigoIva = codigoIva,
                 IvaBase = ivaBase,
-                IvaValor = 0,
+                IvaValor = ivaValor,
                 IceValor = iceValor
             };
         }

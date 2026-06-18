@@ -105,6 +105,7 @@ namespace Facturacion.Core.CasosDeUso.Facturas
             {
                 totalSinImpuestos += detalle.PrecioTotalSinImpuesto;
                 totalIce += detalle.IceValor;
+                totalIva += detalle.IvaValor;
                 totalDescuento += detalle.Descuento;
             }
 

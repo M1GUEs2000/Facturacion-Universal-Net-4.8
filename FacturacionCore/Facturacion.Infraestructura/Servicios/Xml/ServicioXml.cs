@@ -10,6 +10,7 @@ using System.Xml.Serialization;
 using Facturacion.Core.Entidades;
 using Facturacion.Core.Enums;
 using Facturacion.Core.Interfaces.Servicios;
+using Facturacion.Core.Metodos;
 using Facturacion.Infraestructura.Servicios.Xml.Modelos;
 using Microsoft.Extensions.Logging;
 
@@ -130,7 +131,7 @@ namespace Facturacion.Infraestructura.Servicios.Xml
                     Codigo           = "2",
                     CodigoPorcentaje = ((int)grupo.Key).ToString(),
                     BaseImponible    = M(grupo.Sum(d => d.IvaBase)),
-                    Tarifa           = M(TarifaIva(grupo.Key)),
+                    Tarifa           = M(TarifasIva.Porcentaje(grupo.Key)),
                     Valor            = M(grupo.Sum(d => d.IvaValor))
                 });
             }
@@ -174,7 +175,7 @@ namespace Facturacion.Infraestructura.Servicios.Xml
             {
                 Codigo           = "2",
                 CodigoPorcentaje = ((int)d.CodigoIva).ToString(),
-                Tarifa           = M(TarifaIva(d.CodigoIva)),
+                Tarifa           = M(TarifasIva.Porcentaje(d.CodigoIva)),
                 BaseImponible    = M(d.IvaBase),
                 Valor            = M(d.IvaValor)
             });
@@ -183,20 +184,6 @@ namespace Facturacion.Infraestructura.Servicios.Xml
         }
 
         // ─── Helpers ──────────────────────────────────────────────────────────────
-
-        private static decimal TarifaIva(CodigoIva codigo)
-        {
-            switch (codigo)
-            {
-                case CodigoIva.Iva12:            return 12m;
-                case CodigoIva.Iva14:            return 14m;
-                case CodigoIva.Iva15:            return 15m;
-                case CodigoIva.Iva5:             return 5m;
-                case CodigoIva.Iva8Diferenciado: return 8m;
-                case CodigoIva.Iva13:            return 13m;
-                default:                         return 0m;
-            }
-        }
 
         private static string M(decimal v)  => v.ToString("0.00", CultureInfo.InvariantCulture);
         private static string PU(decimal v) => v.ToString("0.000000", CultureInfo.InvariantCulture);

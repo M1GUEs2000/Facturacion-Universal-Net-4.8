@@ -91,6 +91,7 @@
     <Compile Include="Interfaces\Servicios\RespuestasSri.cs" />
     <Compile Include="Metodos\GeneradorClaveAcceso.cs" />
     <Compile Include="Metodos\RutasStorage.cs" />
+    <Compile Include="Metodos\TarifasIva.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
