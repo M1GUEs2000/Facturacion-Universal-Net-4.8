@@ -2,16 +2,19 @@ using System.Threading.Tasks;
 using Dapper;
 using Facturacion.Core.Entidades;
 using Facturacion.Core.Interfaces.Repositorios;
+using Facturacion.Core.Interfaces.Servicios;
 
 namespace Facturacion.Infraestructura.Persistencia
 {
     public class EmpresasRepositorio : IEmpresasRepositorio
     {
         private readonly IFabricaConexion _fabrica;
+        private readonly IProtectorCredenciales _protector;
 
-        public EmpresasRepositorio(IFabricaConexion fabrica)
+        public EmpresasRepositorio(IFabricaConexion fabrica, IProtectorCredenciales protector)
         {
             _fabrica = fabrica;
+            _protector = protector;
         }
 
         public async Task<Empresa> ObtenerPorRucAsync(string ruc)
@@ -24,7 +27,13 @@ namespace Facturacion.Infraestructura.Persistencia
                 WHERE ruc = @ruc;";
 
             using (var con = _fabrica.Crear())
-                return await con.QueryFirstOrDefaultAsync<Empresa>(sql, new { ruc });
+            {
+                var empresa = await con.QueryFirstOrDefaultAsync<Empresa>(sql, new { ruc });
+                // cert_password se guarda cifrado en BD → descifrar al rehidratar.
+                if (empresa != null)
+                    empresa.AsignarCertPassword(_protector.Descifrar(empresa.CertPassword));
+                return empresa;
+            }
         }
 
         public async Task<bool> ExistePorRucAsync(string ruc)
@@ -60,7 +69,7 @@ namespace Facturacion.Infraestructura.Persistencia
                     empresa.DirMatriz,
                     empresa.ObligadoContabilidad,
                     empresa.CertificadoPath,
-                    empresa.CertPassword,
+                    CertPassword = _protector.Cifrar(empresa.CertPassword),
                     empresa.CreatedAt,
                     empresa.UpdatedAt
                 });
@@ -89,7 +98,7 @@ namespace Facturacion.Infraestructura.Persistencia
                     empresa.DirMatriz,
                     empresa.ObligadoContabilidad,
                     empresa.CertificadoPath,
-                    empresa.CertPassword,
+                    CertPassword = _protector.Cifrar(empresa.CertPassword),
                     empresa.UpdatedAt,
                     empresa.Ruc
                 });

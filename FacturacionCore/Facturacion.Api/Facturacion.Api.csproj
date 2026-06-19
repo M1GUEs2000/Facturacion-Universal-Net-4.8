@@ -315,6 +315,8 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Models\Requests.cs" />
+    <Compile Include="Seguridad\CorsHandler.cs" />
+    <Compile Include="Seguridad\GlobalExceptionHandler.cs" />
     <Compile Include="Validators\EmitirFacturaValidator.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

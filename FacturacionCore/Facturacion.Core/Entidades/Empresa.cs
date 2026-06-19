@@ -19,6 +19,9 @@ namespace Facturacion.Core.Entidades
 
         public void AsignarId(int id) => Id = id;
 
+        // Usado por la capa de persistencia para inyectar el password ya descifrado tras leer de BD.
+        public void AsignarCertPassword(string password) => CertPassword = password;
+
         public static Empresa Crear(
             string ruc,
             string razonSocial,

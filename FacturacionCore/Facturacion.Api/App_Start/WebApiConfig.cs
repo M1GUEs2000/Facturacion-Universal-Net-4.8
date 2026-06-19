@@ -10,6 +10,12 @@ namespace Facturacion.Api
     {
         public static void Register(HttpConfiguration config)
         {
+            // Excepciones no controladas → ProblemDetails (RFC 7807) sin filtrar stack.
+            config.Services.Replace(typeof(System.Web.Http.ExceptionHandling.IExceptionHandler), new Seguridad.GlobalExceptionHandler());
+
+            // CORS: solo orígenes HTTPS configurados en appSettings "CorsOrigins".
+            config.MessageHandlers.Add(new Seguridad.CorsHandler());
+
             // Composition root manual: resuelve los controllers de la API con sus dependencias.
             config.Services.Replace(typeof(IHttpControllerActivator), new ResolvedorControladores());
 

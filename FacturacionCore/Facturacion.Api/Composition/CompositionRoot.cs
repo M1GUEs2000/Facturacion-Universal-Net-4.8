@@ -9,6 +9,7 @@ using Facturacion.Core.Interfaces.Servicios;
 using Facturacion.Infraestructura.Persistencia;
 using Facturacion.Infraestructura.Servicios.Firma;
 using Facturacion.Infraestructura.Servicios.Pdf;
+using Facturacion.Infraestructura.Servicios.Seguridad;
 using Facturacion.Infraestructura.Servicios.Sri;
 using Facturacion.Infraestructura.Servicios.Storage;
 using Facturacion.Infraestructura.Servicios.Xml;
@@ -25,6 +26,7 @@ namespace Facturacion.Api.Composition
         private static readonly Lazy<IServicioPdf> _pdf = new Lazy<IServicioPdf>(() => new ServicioPdf(new LoggerTrace<ServicioPdf>()));
         private static readonly Lazy<IServicioXml> _xml = new Lazy<IServicioXml>(() => new ServicioXml(new LoggerTrace<ServicioXml>()));
         private static readonly Lazy<IServicioStorage> _storage = new Lazy<IServicioStorage>(CrearStorage);
+        private static readonly Lazy<IProtectorCredenciales> _protector = new Lazy<IProtectorCredenciales>(CrearProtector);
 
         // ─── Configuración ───────────────────────────────────────────────────
 
@@ -39,6 +41,12 @@ namespace Facturacion.Api.Composition
         private static IServicioFirma CrearFirma() =>
             new ServicioFirma(new LoggerTrace<ServicioFirma>(), new SemaphoreSlim(1, 1));
 
+        private static IProtectorCredenciales CrearProtector()
+        {
+            var clave = ConfigurationManager.AppSettings["CertEncryptionKey"];
+            return new ProtectorCredencialesAes(clave);
+        }
+
         private static IServicioStorage CrearStorage()
         {
             var ruta = ConfigurationManager.AppSettings["StorageBasePath"];
@@ -51,7 +59,7 @@ namespace Facturacion.Api.Composition
 
         // ─── Repositorios ──────────────────────────────────────────────────────
 
-        public static IEmpresasRepositorio Empresas() => new EmpresasRepositorio(_fabrica.Value);
+        public static IEmpresasRepositorio Empresas() => new EmpresasRepositorio(_fabrica.Value, _protector.Value);
         public static IParametrosRepositorio Parametros() => new ParametrosRepositorio(_fabrica.Value);
         public static ISecuencialesRepositorio Secuenciales() => new SecuencialesRepositorio(_fabrica.Value);
         public static IFacturasRepositorio Facturas() => new FacturasRepositorio(_fabrica.Value);
