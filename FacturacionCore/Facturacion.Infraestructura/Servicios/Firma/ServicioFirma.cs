@@ -63,8 +63,8 @@ namespace Facturacion.Infraestructura.Servicios.Firma
                 {
                     SignaturePackaging = SignaturePackaging.ENVELOPED,
                     InputMimeType      = "text/xml",
-                    SignatureMethod    = SignatureMethod.RSAwithSHA1,
-                    DigestMethod       = DigestMethod.SHA1
+                    SignatureMethod    = SignatureMethod.RSAwithSHA256,
+                    DigestMethod       = DigestMethod.SHA256
                 };
 
                 using (parametros.Signer = new Signer(cert))

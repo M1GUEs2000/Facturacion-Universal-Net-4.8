@@ -1,6 +1,6 @@
 <Solution>
-  <Project Path="Facturacion.Api/Facturacion.Api.csproj" />
-  <Project Path="Facturacion.Core/Facturacion.Core.csproj" />
-  <Project Path="Facturacion.Infraestructura/Facturacion.Infraestructura.csproj" />
-  <Project Path="Facturacion.Tests/Facturacion.Tests.csproj" />
+  <Project Path="Facturacion.Api/Facturacion.Api.csproj" Id="2dba9240-f4de-4be1-8afa-5620ce0a8b32" />
+  <Project Path="Facturacion.Core/Facturacion.Core.csproj" Id="3f665f27-d54b-47f2-b051-188345f8ab6c" />
+  <Project Path="Facturacion.Infraestructura/Facturacion.Infraestructura.csproj" Id="4448d840-442a-49f6-bd9a-511a82afbb37" />
+  <Project Path="Facturacion.Tests/Facturacion.Tests.csproj" Id="a4c83e7d-ec39-466d-b546-c776a4810eba" />
 </Solution>

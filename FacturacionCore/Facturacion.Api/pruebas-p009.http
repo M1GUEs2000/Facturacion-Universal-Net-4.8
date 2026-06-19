@@ -1,0 +1,66 @@
+### Pruebas P-009 — primera factura E2E contra SRI de pruebas
+### Empresa y parámetros ya cargados en BD por SQL (RUC 1705296844001, 001-001).
+### Ajustá @host al puerto donde levante la API (IIS Express / VS lo muestra al arrancar).
+
+@host = https://localhost:44302
+@ruc  = 1705296844001
+
+### 1) Obtener token JWT (endpoint público)
+# @name auth
+POST {{host}}/api/v1/auth/token
+Content-Type: application/json
+
+{
+  "cliente": "pruebas"
+}
+
+###
+
+@token = {{auth.response.body.token}}
+
+### 2) (verificación) La empresa existe
+GET {{host}}/api/v1/empresas/{{ruc}}
+Authorization: Bearer {{token}}
+
+### 3) (verificación) Los parámetros existen
+GET {{host}}/api/v1/parametros/{{ruc}}
+Authorization: Bearer {{token}}
+
+### 4) Emitir factura (ambiente 1 = Pruebas, IVA 15%, consumidor final)
+# @name emitir
+POST {{host}}/api/v1/facturas
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "empresaRuc": "{{ruc}}",
+  "estab": "001",
+  "ptoEmi": "001",
+  "ambiente": 1,
+  "fechaEmision": "2026-06-18",
+  "razonSocialComprador": "CONSUMIDOR FINAL",
+  "identificacionComprador": "9999999999999",
+  "tipoIdentificacion": 7,
+  "direccionComprador": "Quito",
+  "detalles": [
+    {
+      "codigoPrincipal": "P001",
+      "descripcion": "Producto de prueba",
+      "cantidad": 1,
+      "precioUnitario": 10.00,
+      "descuento": 0,
+      "codigoIva": 4,
+      "iceValor": 0
+    }
+  ],
+  "formasPago": [
+    { "codigo": "01", "total": 11.50 }
+  ],
+  "infoAdicional": [
+    { "nombre": "email", "valor": "test@test.com" }
+  ]
+}
+
+### 5) Consultar la factura emitida (reemplazá {id} por el id devuelto en el paso 4)
+GET {{host}}/api/v1/facturas/1
+Authorization: Bearer {{token}}
