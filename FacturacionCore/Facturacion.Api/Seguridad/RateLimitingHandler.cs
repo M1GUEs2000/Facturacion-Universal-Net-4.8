@@ -38,6 +38,10 @@ namespace Facturacion.Api.Seguridad
         private static readonly Politica Escritura =
             new Politica { Nombre = "escritura", Limite = 20, Ventana = TimeSpan.FromMinutes(1) };
 
+        // Emisión de tokens: límite bajo para frenar fuerza bruta de credenciales.
+        private static readonly Politica Auth =
+            new Politica { Nombre = "auth", Limite = 10, Ventana = TimeSpan.FromMinutes(1) };
+
         // Almacén en memoria. Para un despliegue de una sola instancia es suficiente;
         // tras balanceador/varias instancias habría que mover esto a un store compartido.
         private static readonly ConcurrentDictionary<string, Contador> Contadores =
@@ -90,6 +94,8 @@ namespace Facturacion.Api.Seguridad
         private static Politica SeleccionarPolitica(HttpRequestMessage request)
         {
             var path = request.RequestUri.AbsolutePath ?? string.Empty;
+            if (path.IndexOf("/api/v1/auth", StringComparison.OrdinalIgnoreCase) >= 0)
+                return Auth;
             if (path.IndexOf("/api/v1/facturas", StringComparison.OrdinalIgnoreCase) >= 0)
                 return Emision;
             if (path.IndexOf("/api/v1/empresas", StringComparison.OrdinalIgnoreCase) >= 0)

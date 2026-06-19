@@ -62,6 +62,16 @@ namespace Facturacion.Core
                 Error.Failure("Pdf.ErrorGeneracion", "Error al generar el PDF del RIDE.");
         }
 
+        public static class Correo
+        {
+            public static Error NoConfigurado =>
+                Error.Failure("Correo.NoConfigurado", "El servicio de correo (SMTP) no está configurado.");
+            public static Error DestinatarioInvalido =>
+                Error.Validation("Correo.DestinatarioInvalido", "No hay un destinatario válido para el correo.");
+            public static Error ErrorEnvio =>
+                Error.Failure("Correo.ErrorEnvio", "Error al enviar el correo.");
+        }
+
         public static class Secuencial
         {
             public static Error NoConfigurado =>

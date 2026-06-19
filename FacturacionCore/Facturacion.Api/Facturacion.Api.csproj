@@ -305,6 +305,7 @@
     <Compile Include="Auth\JwtHelper.cs" />
     <Compile Include="Auth\JwtAuthorizeAttribute.cs" />
     <Compile Include="Auth\IdentidadHttp.cs" />
+    <Compile Include="Auth\CredencialesCliente.cs" />
     <Compile Include="Composition\CompositionRoot.cs" />
     <Compile Include="Logging\SerilogLoggerAdapter.cs" />
     <Compile Include="Logging\SensitiveDataDestructuringPolicy.cs" />

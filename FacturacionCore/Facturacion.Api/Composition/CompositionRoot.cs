@@ -8,6 +8,7 @@ using Facturacion.Core.CasosDeUso.Facturas;
 using Facturacion.Core.Interfaces.Repositorios;
 using Facturacion.Core.Interfaces.Servicios;
 using Facturacion.Infraestructura.Persistencia;
+using Facturacion.Infraestructura.Servicios.Correo;
 using Facturacion.Infraestructura.Servicios.Firma;
 using Facturacion.Infraestructura.Servicios.Pdf;
 using Facturacion.Infraestructura.Servicios.Seguridad;
@@ -29,6 +30,7 @@ namespace Facturacion.Api.Composition
         private static readonly Lazy<IServicioStorage> _storage = new Lazy<IServicioStorage>(CrearStorage);
         private static readonly Lazy<IProtectorCredenciales> _protector = new Lazy<IProtectorCredenciales>(CrearProtector);
         private static readonly Lazy<IAuditLogger> _audit = new Lazy<IAuditLogger>(() => new AuditLogger(new SerilogLoggerAdapter<AuditLogger>()));
+        private static readonly Lazy<IServicioCorreo> _correo = new Lazy<IServicioCorreo>(CrearCorreo);
 
         // ─── Configuración ───────────────────────────────────────────────────
 
@@ -47,6 +49,24 @@ namespace Facturacion.Api.Composition
         {
             var clave = ConfigurationManager.AppSettings["CertEncryptionKey"];
             return new ProtectorCredencialesAes(clave);
+        }
+
+        private static IServicioCorreo CrearCorreo()
+        {
+            int puerto;
+            bool ssl;
+            var config = new ConfiguracionSmtp
+            {
+                Host = ConfigurationManager.AppSettings["SmtpHost"],
+                Puerto = int.TryParse(ConfigurationManager.AppSettings["SmtpPort"], out puerto) ? puerto : 587,
+                // Default true: solo es false si está configurado explícitamente como "false".
+                UsarSsl = !bool.TryParse(ConfigurationManager.AppSettings["SmtpSsl"], out ssl) || ssl,
+                Usuario = ConfigurationManager.AppSettings["SmtpUsuario"],
+                Password = ConfigurationManager.AppSettings["SmtpPassword"],
+                Remitente = ConfigurationManager.AppSettings["SmtpRemitente"],
+                NombreRemitente = ConfigurationManager.AppSettings["SmtpNombreRemitente"]
+            };
+            return new ServicioCorreoSmtp(config, new SerilogLoggerAdapter<ServicioCorreoSmtp>());
         }
 
         private static IServicioStorage CrearStorage()
@@ -70,6 +90,7 @@ namespace Facturacion.Api.Composition
 
         public static IAuditLogger Auditoria() => _audit.Value;
         public static IFabricaConexion Conexion() => _fabrica.Value;
+        public static IServicioCorreo Correo() => _correo.Value;
 
         // ─── Casos de uso ──────────────────────────────────────────────────────
 

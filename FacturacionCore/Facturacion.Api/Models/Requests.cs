@@ -81,5 +81,6 @@ namespace Facturacion.Api.Models
     public class TokenRequest
     {
         public string Cliente { get; set; }
+        public string Secret { get; set; }
     }
 }

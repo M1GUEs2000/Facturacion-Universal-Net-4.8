@@ -231,6 +231,8 @@
     <Compile Include="Persistencia\SecuencialesRepositorio.cs" />
     <Compile Include="Persistencia\FacturasRepositorio.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Servicios\Correo\ConfiguracionSmtp.cs" />
+    <Compile Include="Servicios\Correo\ServicioCorreoSmtp.cs" />
     <Compile Include="Servicios\Firma\ServicioFirma.cs" />
     <Compile Include="Servicios\Seguridad\AuditLogger.cs" />
     <Compile Include="Servicios\Seguridad\ProtectorCredencialesAes.cs" />
