@@ -1,10 +1,10 @@
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http.ExceptionHandling;
 using System.Web.Http.Results;
+using Serilog;
 
 namespace Facturacion.Api.Seguridad
 {
@@ -17,8 +17,9 @@ namespace Facturacion.Api.Seguridad
         {
             var correlationId = context.Request.GetCorrelationId().ToString();
 
-            // Log con la causa raíz (batch 3 lo lleva a Serilog).
-            Trace.TraceError("[UNHANDLED] {0} | {1}", correlationId, context.Exception);
+            // Log estructurado con la causa raíz; la excepción completa va al sink de archivo.
+            Log.ForContext<GlobalExceptionHandler>()
+               .Error(context.Exception, "Excepción no controlada. CorrelationId: {CorrelationId}", correlationId);
 
             bool mostrarDetalle = HttpContext.Current != null && HttpContext.Current.IsDebuggingEnabled;
 

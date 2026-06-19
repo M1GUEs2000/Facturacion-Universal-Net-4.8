@@ -83,6 +83,7 @@
     <Compile Include="Interfaces\Repositorios\IFacturasRepositorio.cs" />
     <Compile Include="Interfaces\Repositorios\IParametrosRepositorio.cs" />
     <Compile Include="Interfaces\Repositorios\ISecuencialesRepositorio.cs" />
+    <Compile Include="Interfaces\Servicios\IAuditLogger.cs" />
     <Compile Include="Interfaces\Servicios\IProtectorCredenciales.cs" />
     <Compile Include="Interfaces\Servicios\IServicioFirma.cs" />
     <Compile Include="Interfaces\Servicios\IServicioPdf.cs" />

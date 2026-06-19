@@ -2,6 +2,7 @@ using System;
 using System.Configuration;
 using System.Threading;
 using System.Web.Hosting;
+using Facturacion.Api.Logging;
 using Facturacion.Core.CasosDeUso.Comun;
 using Facturacion.Core.CasosDeUso.Facturas;
 using Facturacion.Core.Interfaces.Repositorios;
@@ -22,11 +23,12 @@ namespace Facturacion.Api.Composition
     {
         private static readonly Lazy<IFabricaConexion> _fabrica = new Lazy<IFabricaConexion>(CrearFabrica);
         private static readonly Lazy<IServicioFirma> _firma = new Lazy<IServicioFirma>(CrearFirma);
-        private static readonly Lazy<IServicioSri> _sri = new Lazy<IServicioSri>(() => new ServicioSri(new LoggerTrace<ServicioSri>()));
-        private static readonly Lazy<IServicioPdf> _pdf = new Lazy<IServicioPdf>(() => new ServicioPdf(new LoggerTrace<ServicioPdf>()));
-        private static readonly Lazy<IServicioXml> _xml = new Lazy<IServicioXml>(() => new ServicioXml(new LoggerTrace<ServicioXml>()));
+        private static readonly Lazy<IServicioSri> _sri = new Lazy<IServicioSri>(() => new ServicioSri(new SerilogLoggerAdapter<ServicioSri>()));
+        private static readonly Lazy<IServicioPdf> _pdf = new Lazy<IServicioPdf>(() => new ServicioPdf(new SerilogLoggerAdapter<ServicioPdf>()));
+        private static readonly Lazy<IServicioXml> _xml = new Lazy<IServicioXml>(() => new ServicioXml(new SerilogLoggerAdapter<ServicioXml>()));
         private static readonly Lazy<IServicioStorage> _storage = new Lazy<IServicioStorage>(CrearStorage);
         private static readonly Lazy<IProtectorCredenciales> _protector = new Lazy<IProtectorCredenciales>(CrearProtector);
+        private static readonly Lazy<IAuditLogger> _audit = new Lazy<IAuditLogger>(() => new AuditLogger(new SerilogLoggerAdapter<AuditLogger>()));
 
         // ─── Configuración ───────────────────────────────────────────────────
 
@@ -39,7 +41,7 @@ namespace Facturacion.Api.Composition
         }
 
         private static IServicioFirma CrearFirma() =>
-            new ServicioFirma(new LoggerTrace<ServicioFirma>(), new SemaphoreSlim(1, 1));
+            new ServicioFirma(new SerilogLoggerAdapter<ServicioFirma>(), new SemaphoreSlim(1, 1));
 
         private static IProtectorCredenciales CrearProtector()
         {
@@ -54,7 +56,7 @@ namespace Facturacion.Api.Composition
                 ruta = "~/App_Data/archivos";
             if (ruta.StartsWith("~") && HostingEnvironment.IsHosted)
                 ruta = HostingEnvironment.MapPath(ruta);
-            return new ServicioStorageLocal(ruta, new LoggerTrace<ServicioStorageLocal>());
+            return new ServicioStorageLocal(ruta, new SerilogLoggerAdapter<ServicioStorageLocal>());
         }
 
         // ─── Repositorios ──────────────────────────────────────────────────────
@@ -63,6 +65,11 @@ namespace Facturacion.Api.Composition
         public static IParametrosRepositorio Parametros() => new ParametrosRepositorio(_fabrica.Value);
         public static ISecuencialesRepositorio Secuenciales() => new SecuencialesRepositorio(_fabrica.Value);
         public static IFacturasRepositorio Facturas() => new FacturasRepositorio(_fabrica.Value);
+
+        // ─── Servicios transversales ────────────────────────────────────────────
+
+        public static IAuditLogger Auditoria() => _audit.Value;
+        public static IFabricaConexion Conexion() => _fabrica.Value;
 
         // ─── Casos de uso ──────────────────────────────────────────────────────
 

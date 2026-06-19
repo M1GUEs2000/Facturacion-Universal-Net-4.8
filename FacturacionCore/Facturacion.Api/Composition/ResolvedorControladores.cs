@@ -19,13 +19,17 @@ namespace Facturacion.Api.Composition
                 return new FacturasController(
                     CompositionRoot.EmitirFactura(),
                     CompositionRoot.ReintentarEmisionFactura(),
-                    CompositionRoot.Facturas());
+                    CompositionRoot.Facturas(),
+                    CompositionRoot.Auditoria());
 
             if (controllerType == typeof(EmpresasController))
-                return new EmpresasController(CompositionRoot.Empresas());
+                return new EmpresasController(CompositionRoot.Empresas(), CompositionRoot.Auditoria());
 
             if (controllerType == typeof(ParametrosController))
-                return new ParametrosController(CompositionRoot.Parametros(), CompositionRoot.Secuenciales());
+                return new ParametrosController(CompositionRoot.Parametros(), CompositionRoot.Secuenciales(), CompositionRoot.Auditoria());
+
+            if (controllerType == typeof(HealthController))
+                return new HealthController(CompositionRoot.Conexion());
 
             return _porDefecto.Create(request, descriptor, controllerType);
         }

@@ -6,6 +6,7 @@ using Facturacion.Api.Models;
 using Facturacion.Core.Entidades;
 using Facturacion.Core.Enums;
 using Facturacion.Core.Interfaces.Repositorios;
+using Facturacion.Core.Interfaces.Servicios;
 
 namespace Facturacion.Api.Controllers
 {
@@ -15,11 +16,13 @@ namespace Facturacion.Api.Controllers
     {
         private readonly IParametrosRepositorio _parametros;
         private readonly ISecuencialesRepositorio _secuenciales;
+        private readonly IAuditLogger _audit;
 
-        public ParametrosController(IParametrosRepositorio parametros, ISecuencialesRepositorio secuenciales)
+        public ParametrosController(IParametrosRepositorio parametros, ISecuencialesRepositorio secuenciales, IAuditLogger audit)
         {
             _parametros = parametros;
             _secuenciales = secuenciales;
+            _audit = audit;
         }
 
         [HttpPost, Route("")]
@@ -41,6 +44,15 @@ namespace Facturacion.Api.Controllers
             if (existente == null)
                 await _secuenciales.AgregarAsync(
                     SecuencialSri.Crear(req.EmpresaRuc, req.Estab, req.PtoEmi, TipoDocumentoSri.Factura));
+
+            _audit.Registrar(new RegistroAuditoria
+            {
+                Tipo = EventoAuditoria.ParametrosCreados,
+                Cliente = this.ClienteActual(),
+                Ruc = req.EmpresaRuc,
+                Ip = this.IpActual(),
+                Exito = true
+            });
 
             return Content(HttpStatusCode.Created, new { id = parametros.Id, empresaRuc = parametros.EmpresaRuc });
         }

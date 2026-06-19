@@ -8,6 +8,7 @@ using Facturacion.Api.Models;
 using Facturacion.Core.CasosDeUso.Facturas;
 using Facturacion.Core.Entidades;
 using Facturacion.Core.Interfaces.Repositorios;
+using Facturacion.Core.Interfaces.Servicios;
 
 namespace Facturacion.Api.Controllers
 {
@@ -18,12 +19,15 @@ namespace Facturacion.Api.Controllers
         private readonly EmitirFactura _emitir;
         private readonly ReintentarEmisionFactura _reintentar;
         private readonly IFacturasRepositorio _facturas;
+        private readonly IAuditLogger _audit;
 
-        public FacturasController(EmitirFactura emitir, ReintentarEmisionFactura reintentar, IFacturasRepositorio facturas)
+        public FacturasController(EmitirFactura emitir, ReintentarEmisionFactura reintentar,
+            IFacturasRepositorio facturas, IAuditLogger audit)
         {
             _emitir = emitir;
             _reintentar = reintentar;
             _facturas = facturas;
+            _audit = audit;
         }
 
         [HttpPost, Route("")]
@@ -49,6 +53,18 @@ namespace Facturacion.Api.Controllers
             };
 
             var resultado = await _emitir.EjecutarAsync(cmd);
+
+            _audit.Registrar(new RegistroAuditoria
+            {
+                Tipo = EventoAuditoria.FacturaEmitida,
+                Cliente = this.ClienteActual(),
+                Ruc = req.EmpresaRuc,
+                Ip = this.IpActual(),
+                Exito = !resultado.IsError,
+                CodigoError = resultado.IsError ? resultado.FirstError.Code : null,
+                Detalle = resultado.IsError ? null : resultado.Value.ClaveAcceso
+            });
+
             return this.Responder(resultado, HttpStatusCode.Created, r => new
             {
                 id = r.Id,
@@ -62,6 +78,17 @@ namespace Facturacion.Api.Controllers
         public async Task<IHttpActionResult> Reintentar(int id)
         {
             var resultado = await _reintentar.EjecutarAsync(new ComandoReintentarEmisionFactura { FacturaId = id });
+
+            _audit.Registrar(new RegistroAuditoria
+            {
+                Tipo = EventoAuditoria.FacturaReintentada,
+                Cliente = this.ClienteActual(),
+                Ip = this.IpActual(),
+                Exito = !resultado.IsError,
+                CodigoError = resultado.IsError ? resultado.FirstError.Code : null,
+                Detalle = "facturaId=" + id
+            });
+
             return this.Responder(resultado, HttpStatusCode.OK, r => new
             {
                 id = r.Id,

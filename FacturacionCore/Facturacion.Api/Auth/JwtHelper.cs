@@ -51,13 +51,23 @@ namespace Facturacion.Api.Auth
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = key,
+                    // Solo HMAC-SHA256: bloquea tokens con alg "none" o algoritmos débiles (alg confusion).
+                    ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha256 },
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
+                    // Exige exp y lo valida; 30s de tolerancia para drift de reloj entre hosts.
+                    RequireExpirationTime = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromSeconds(30)
                 }, out validado);
 
-                cliente = ((JwtSecurityToken)validado)
-                    .Claims.FirstOrDefault(c => c.Type == "cliente")?.Value;
+                // Defensa adicional: el token validado debe ser HMAC-SHA256.
+                var jwt = validado as JwtSecurityToken;
+                if (jwt == null ||
+                    !string.Equals(jwt.Header.Alg, SecurityAlgorithms.HmacSha256, StringComparison.Ordinal))
+                    return false;
+
+                cliente = jwt.Claims.FirstOrDefault(c => c.Type == "cliente")?.Value;
 
                 return true;
             }

@@ -16,6 +16,9 @@ namespace Facturacion.Api
             // CORS: solo orígenes HTTPS configurados en appSettings "CorsOrigins".
             config.MessageHandlers.Add(new Seguridad.CorsHandler());
 
+            // Rate limiting FixedWindow (emisión 60/min, escritura 20/min) por cliente/IP.
+            config.MessageHandlers.Add(new Seguridad.RateLimitingHandler());
+
             // Composition root manual: resuelve los controllers de la API con sus dependencias.
             config.Services.Replace(typeof(IHttpControllerActivator), new ResolvedorControladores());
 

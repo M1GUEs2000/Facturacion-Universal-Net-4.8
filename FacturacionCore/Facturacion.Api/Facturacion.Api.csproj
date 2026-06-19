@@ -304,19 +304,24 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Auth\JwtHelper.cs" />
     <Compile Include="Auth\JwtAuthorizeAttribute.cs" />
-    <Compile Include="Composition\LoggerTrace.cs" />
+    <Compile Include="Auth\IdentidadHttp.cs" />
     <Compile Include="Composition\CompositionRoot.cs" />
+    <Compile Include="Logging\SerilogLoggerAdapter.cs" />
+    <Compile Include="Logging\SensitiveDataDestructuringPolicy.cs" />
+    <Compile Include="Logging\LoggingConfig.cs" />
     <Compile Include="Composition\ResolvedorControladores.cs" />
     <Compile Include="Composition\ResultadosHttp.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\EmpresasController.cs" />
     <Compile Include="Controllers\FacturasController.cs" />
     <Compile Include="Controllers\ParametrosController.cs" />
+    <Compile Include="Controllers\HealthController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Models\Requests.cs" />
     <Compile Include="Seguridad\CorsHandler.cs" />
     <Compile Include="Seguridad\GlobalExceptionHandler.cs" />
+    <Compile Include="Seguridad\RateLimitingHandler.cs" />
     <Compile Include="Validators\EmitirFacturaValidator.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
