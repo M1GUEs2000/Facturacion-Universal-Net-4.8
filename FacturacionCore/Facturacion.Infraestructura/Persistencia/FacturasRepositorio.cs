@@ -196,6 +196,25 @@ namespace Facturacion.Infraestructura.Persistencia
             }
         }
 
+        // Candidatas a reintento automático: estados incompletos cuya última
+        // actualización (UTC) es más vieja que el delay. SYSUTCDATETIME() casa con la
+        // precisión DATETIME2(3) de updated_at; el delay llega negativo a DATEADD.
+        public async Task<IReadOnlyList<int>> ObtenerIdsReintentablesAsync(IEnumerable<string> estados, int antiguedadMinutos)
+        {
+            const string sql = @"
+                SELECT id
+                FROM dbo.facturas
+                WHERE estado_sri IN @estados
+                  AND updated_at < DATEADD(minute, @delay, SYSUTCDATETIME())
+                ORDER BY updated_at;";
+
+            using (var con = _fabrica.Crear())
+            {
+                var ids = await con.QueryAsync<int>(sql, new { estados, delay = -antiguedadMinutos });
+                return ids.AsList();
+            }
+        }
+
         // Solo actualiza la cabecera — los checkpoints del orquestador nunca tocan el detalle.
         public async Task ActualizarAsync(Factura factura)
         {

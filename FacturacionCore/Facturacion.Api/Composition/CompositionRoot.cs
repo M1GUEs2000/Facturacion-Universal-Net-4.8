@@ -105,5 +105,8 @@ namespace Facturacion.Api.Composition
             var orquestador = new OrquestadorReintento(_firma.Value, _sri.Value, _pdf.Value, _storage.Value);
             return new ReintentarEmisionFactura(Facturas(), Empresas(), Parametros(), _xml.Value, orquestador);
         }
+
+        public static EnviarCorreoFactura EnviarCorreoFactura() =>
+            new EnviarCorreoFactura(Facturas(), _storage.Value, _correo.Value);
     }
 }

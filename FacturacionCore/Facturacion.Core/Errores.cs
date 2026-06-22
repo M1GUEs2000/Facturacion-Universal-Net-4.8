@@ -14,6 +14,7 @@ namespace Facturacion.Core
         {
             public static Error NoEncontrada => Error.NotFound("Factura.NoEncontrada", "La factura no existe.");
             public static Error SecuencialDuplicado => Error.Conflict("Factura.SecuencialDuplicado", "Ya existe un comprobante activo con ese secuencial.");
+            public static Error NoAutorizada => Error.Failure("Factura.NoAutorizada", "La factura no está autorizada. Solo se puede enviar correo de facturas autorizadas.");
         }
 
         public static class Sri

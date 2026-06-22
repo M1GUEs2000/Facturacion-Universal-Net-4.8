@@ -76,6 +76,13 @@ namespace Facturacion.Api.Models
         public string ContribuyenteEspecial { get; set; }
     }
 
+    // ─── Correo ───────────────────────────────────────────────────────────────
+
+    public class EnviarCorreoFacturaRequest
+    {
+        public List<string> Destinatarios { get; set; } = new List<string>();
+    }
+
     // ─── Auth ─────────────────────────────────────────────────────────────────
 
     public class TokenRequest

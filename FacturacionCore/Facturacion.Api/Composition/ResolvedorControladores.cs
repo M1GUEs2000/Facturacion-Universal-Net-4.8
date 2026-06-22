@@ -19,6 +19,7 @@ namespace Facturacion.Api.Composition
                 return new FacturasController(
                     CompositionRoot.EmitirFactura(),
                     CompositionRoot.ReintentarEmisionFactura(),
+                    CompositionRoot.EnviarCorreoFactura(),
                     CompositionRoot.Facturas(),
                     CompositionRoot.Auditoria());
 

@@ -64,6 +64,7 @@
     <Compile Include="CasosDeUso\Comun\OrquestadorReintento.cs" />
     <Compile Include="CasosDeUso\Facturas\EmitirFactura.cs" />
     <Compile Include="CasosDeUso\Facturas\ReintentarEmisionFactura.cs" />
+    <Compile Include="CasosDeUso\Facturas\EnviarCorreoFactura.cs" />
     <Compile Include="Entidades\DocumentoElectronico.cs" />
     <Compile Include="Entidades\Empresa.cs" />
     <Compile Include="Entidades\Factura.cs" />

@@ -18,14 +18,16 @@ namespace Facturacion.Api.Controllers
     {
         private readonly EmitirFactura _emitir;
         private readonly ReintentarEmisionFactura _reintentar;
+        private readonly EnviarCorreoFactura _correo;
         private readonly IFacturasRepositorio _facturas;
         private readonly IAuditLogger _audit;
 
         public FacturasController(EmitirFactura emitir, ReintentarEmisionFactura reintentar,
-            IFacturasRepositorio facturas, IAuditLogger audit)
+            EnviarCorreoFactura correo, IFacturasRepositorio facturas, IAuditLogger audit)
         {
             _emitir = emitir;
             _reintentar = reintentar;
+            _correo = correo;
             _facturas = facturas;
             _audit = audit;
         }
@@ -115,6 +117,33 @@ namespace Facturacion.Api.Controllers
                 xmlAutorizadoPath = factura.XmlAutorizadoPath,
                 pdfPath = factura.PdfPath
             });
+        }
+
+        [HttpPost, Route("{id:int}/correo")]
+        public async Task<IHttpActionResult> EnviarCorreo(int id, EnviarCorreoFacturaRequest req)
+        {
+            if (req == null || req.Destinatarios == null || req.Destinatarios.Count == 0)
+                return BadRequest("Se requiere al menos un destinatario.");
+
+            var cmd = new ComandoEnviarCorreoFactura
+            {
+                FacturaId = id,
+                Destinatarios = req.Destinatarios
+            };
+
+            var resultado = await _correo.EjecutarAsync(cmd);
+
+            _audit.Registrar(new RegistroAuditoria
+            {
+                Tipo = EventoAuditoria.FacturaEmitida,
+                Cliente = this.ClienteActual(),
+                Ip = this.IpActual(),
+                Exito = !resultado.IsError,
+                CodigoError = resultado.IsError ? resultado.FirstError.Code : null,
+                Detalle = "correo facturaId=" + id
+            });
+
+            return this.Responder(resultado, HttpStatusCode.OK);
         }
 
         // ─── Mapeo request → dominio ─────────────────────────────────────────────
