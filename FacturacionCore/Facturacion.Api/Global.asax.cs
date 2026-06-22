@@ -6,6 +6,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Facturacion.Api.Jobs;
 using Facturacion.Api.Logging;
 
 namespace Facturacion.Api
@@ -22,10 +23,16 @@ namespace Facturacion.Api
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            // Hangfire al final: ya hay log y la app está configurada. Arranca el
+            // BackgroundJobServer y registra el reintento automático recurrente.
+            HangfireConfig.Configurar();
         }
 
         protected void Application_End()
         {
+            // Shutdown ordenado del servidor de jobs antes de cerrar el log.
+            HangfireConfig.Cerrar();
             // Vacía los buffers pendientes del sink de archivo al reciclar el AppPool.
             LoggingConfig.Cerrar();
         }
