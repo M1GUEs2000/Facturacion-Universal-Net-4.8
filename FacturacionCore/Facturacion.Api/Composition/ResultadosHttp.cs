@@ -36,7 +36,10 @@ namespace Facturacion.Api.Composition
                 case ErrorType.Unauthorized: return HttpStatusCode.Unauthorized;        // 401
                 case ErrorType.Forbidden:    return HttpStatusCode.Forbidden;           // 403
                 case ErrorType.Unexpected:   return HttpStatusCode.InternalServerError; // 500
-                default:                     return HttpStatusCode.BadRequest;          // 400 (Failure)
+                // Failure = fallo de procesamiento (SRI rechazó, error de firma/PDF/storage),
+                // no es culpa del request → 422, no 400.
+                case ErrorType.Failure:      return (HttpStatusCode)422;                // 422 Unprocessable Entity
+                default:                     return HttpStatusCode.BadRequest;          // 400
             }
         }
     }

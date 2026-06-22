@@ -28,6 +28,15 @@ namespace Facturacion.Infraestructura.Servicios.Sri
         private const int MaxIntentosAutorizacion = 5;
         private static readonly TimeSpan DelayEntreIntentos = TimeSpan.FromSeconds(2);
 
+        // Estados del protocolo SRI tal cual llegan en el XML de respuesta (contrato literal).
+        private const string EstadoRecibida = "RECIBIDA";
+        private const string EstadoEnProcesamiento = "EN PROCESAMIENTO";
+        private const string EstadoAutorizado = "AUTORIZADO";
+        private const string EstadoNoAutorizado = "NO AUTORIZADO";
+        // Identificador SRI de "clave de acceso ya registrada".
+        private const string IdentificadorClaveRegistrada = "43";
+        private const string TextoClaveRegistrada = "CLAVE ACCESO REGISTRADA";
+
         // HttpClient estático (reutilizado para evitar agotamiento de sockets).
         private static readonly HttpClient Http;
 
@@ -88,7 +97,7 @@ namespace Facturacion.Infraestructura.Servicios.Sri
             var estado = ValorHijo(nodo, "estado") ?? "";
             var mensajes = ExtraerMensajes(doc);
 
-            if (estado == "RECIBIDA")
+            if (estado == EstadoRecibida)
                 return new RespuestaRecepcionSri(null, estado);
 
             // Clave de acceso ya registrada → tratar como duplicado para que el
@@ -96,7 +105,7 @@ namespace Facturacion.Infraestructura.Servicios.Sri
             if (EsClaveRegistrada(mensajes))
                 return Errores.Sri.SecuencialDuplicado;
 
-            if (estado == "EN PROCESAMIENTO")
+            if (estado == EstadoEnProcesamiento)
                 return Errores.Sri.EnProcesamiento;
 
             return Errores.Sri.Devuelta(FormatearMensajes(mensajes));
@@ -133,7 +142,7 @@ namespace Facturacion.Infraestructura.Servicios.Sri
 
                 // Solo se reintenta mientras el SRI siga EN PROCESAMIENTO.
                 if (ultima.IsError
-                    && ultima.FirstError.Code == "Sri.EnProcesamiento"
+                    && ultima.FirstError.Code == Errores.Sri.CodigoEnProcesamiento
                     && intento < MaxIntentosAutorizacion)
                 {
                     await Task.Delay(DelayEntreIntentos);
@@ -168,7 +177,7 @@ namespace Facturacion.Infraestructura.Servicios.Sri
             var mensajes = ExtraerMensajes(root);
             var resumen = FormatearMensajes(mensajes);
 
-            if (estado == "AUTORIZADO")
+            if (estado == EstadoAutorizado)
             {
                 var numero = ValorHijo(auth, "numeroAutorizacion");
                 var fechaStr = ValorHijo(auth, "fechaAutorizacion");
@@ -183,10 +192,10 @@ namespace Facturacion.Infraestructura.Servicios.Sri
 
             // NO AUTORIZADO se devuelve como VALOR (Autorizado=false) para que el caso de
             // uso persista el documento como NoAutorizado antes de retornar el error.
-            if (estado == "NO AUTORIZADO")
+            if (estado == EstadoNoAutorizado)
                 return new RespuestaAutorizacionSri(false, null, default(DateTimeOffset), null, resumen);
 
-            if (estado == "EN PROCESAMIENTO")
+            if (estado == EstadoEnProcesamiento)
                 return Errores.Sri.EnProcesamiento;
 
             return Errores.Sri.SinRespuesta;
@@ -262,8 +271,8 @@ namespace Facturacion.Infraestructura.Servicios.Sri
         private static bool EsClaveRegistrada(List<MensajeSri> mensajes)
         {
             return mensajes.Any(m =>
-                m.Identificador == "43"
-                || (m.Mensaje != null && m.Mensaje.ToUpperInvariant().Contains("CLAVE ACCESO REGISTRADA")));
+                m.Identificador == IdentificadorClaveRegistrada
+                || (m.Mensaje != null && m.Mensaje.ToUpperInvariant().Contains(TextoClaveRegistrada)));
         }
 
         private static string FormatearMensajes(List<MensajeSri> mensajes)

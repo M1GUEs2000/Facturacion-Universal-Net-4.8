@@ -27,10 +27,12 @@ namespace Facturacion.Api.Controllers
         [HttpPost, Route("")]
         public async Task<IHttpActionResult> Crear(CrearEmpresaRequest req)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             if (req == null || string.IsNullOrWhiteSpace(req.Ruc))
             {
-                Auditar(req?.Ruc, false, Errores.Empresa.NoEncontrada.Code);
-                return this.DesdeError(Errores.Empresa.NoEncontrada);
+                Auditar(req?.Ruc, false, Errores.Empresa.RucRequerido.Code);
+                return this.DesdeError(Errores.Empresa.RucRequerido);
             }
 
             if (await _empresas.ExistePorRucAsync(req.Ruc))
@@ -66,7 +68,7 @@ namespace Facturacion.Api.Controllers
         public async Task<IHttpActionResult> Obtener(string ruc)
         {
             var empresa = await _empresas.ObtenerPorRucAsync(ruc);
-            if (empresa == null) return NotFound();
+            if (empresa == null) return this.DesdeError(Errores.Empresa.NoEncontrada);
 
             return Ok(new
             {

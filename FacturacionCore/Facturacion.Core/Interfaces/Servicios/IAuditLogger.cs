@@ -9,7 +9,8 @@ namespace Facturacion.Core.Interfaces.Servicios
         CertificadoActualizado,
         ParametrosCreados,
         FacturaEmitida,
-        FacturaReintentada
+        FacturaReintentada,
+        CorreoEnviado
     }
 
     // Registro de auditoría. Nunca debe contener datos sensibles (passwords, bytes del .p12).

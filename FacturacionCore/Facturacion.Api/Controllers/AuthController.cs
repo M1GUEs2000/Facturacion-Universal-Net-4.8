@@ -1,7 +1,9 @@
 using System.Web;
 using System.Web.Http;
 using Facturacion.Api.Auth;
+using Facturacion.Api.Composition;
 using Facturacion.Api.Models;
+using Facturacion.Core;
 using Serilog;
 
 namespace Facturacion.Api.Controllers
@@ -26,7 +28,7 @@ namespace Facturacion.Api.Controllers
                             string.IsNullOrWhiteSpace(cliente) ? "-" : cliente, ip);
 
                 // 401 genérico: no revela si el cliente existe o si el secret es incorrecto.
-                return Unauthorized();
+                return this.DesdeError(Errores.Auth.CredencialesInvalidas);
             }
 
             var token = JwtHelper.Generar(cliente);

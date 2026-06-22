@@ -5,6 +5,7 @@ using System.Web.Http;
 using Facturacion.Api.Auth;
 using Facturacion.Api.Composition;
 using Facturacion.Api.Models;
+using Facturacion.Core;
 using Facturacion.Core.CasosDeUso.Facturas;
 using Facturacion.Core.Entidades;
 using Facturacion.Core.Interfaces.Repositorios;
@@ -104,7 +105,7 @@ namespace Facturacion.Api.Controllers
         public async Task<IHttpActionResult> Obtener(int id)
         {
             var factura = await _facturas.ObtenerPorIdAsync(id);
-            if (factura == null) return NotFound();
+            if (factura == null) return this.DesdeError(Errores.Factura.NoEncontrada);
 
             return Ok(new
             {
@@ -123,7 +124,7 @@ namespace Facturacion.Api.Controllers
         public async Task<IHttpActionResult> EnviarCorreo(int id, EnviarCorreoFacturaRequest req)
         {
             if (req == null || req.Destinatarios == null || req.Destinatarios.Count == 0)
-                return BadRequest("Se requiere al menos un destinatario.");
+                return this.DesdeError(Errores.Correo.DestinatarioInvalido);
 
             var cmd = new ComandoEnviarCorreoFactura
             {
@@ -135,7 +136,7 @@ namespace Facturacion.Api.Controllers
 
             _audit.Registrar(new RegistroAuditoria
             {
-                Tipo = EventoAuditoria.FacturaEmitida,
+                Tipo = EventoAuditoria.CorreoEnviado,
                 Cliente = this.ClienteActual(),
                 Ip = this.IpActual(),
                 Exito = !resultado.IsError,

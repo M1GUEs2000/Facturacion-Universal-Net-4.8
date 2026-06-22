@@ -54,6 +54,7 @@ namespace Facturacion.Api.Models
 
     // ─── Empresas ─────────────────────────────────────────────────────────────
 
+    [Validator(typeof(CrearEmpresaValidator))]
     public class CrearEmpresaRequest
     {
         public string Ruc { get; set; }
@@ -67,6 +68,7 @@ namespace Facturacion.Api.Models
 
     // ─── Parámetros ─────────────────────────────────────────────────────────────
 
+    [Validator(typeof(CrearParametrosValidator))]
     public class CrearParametrosRequest
     {
         public string EmpresaRuc { get; set; }

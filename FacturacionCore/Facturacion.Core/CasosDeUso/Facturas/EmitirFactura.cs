@@ -121,8 +121,27 @@ namespace Facturacion.Core.CasosDeUso.Facturas
             // INSERT antes de llamar al SRI
             await _facturas.AgregarAsync(factura);
 
-            var xmlSinFirmar = _xml.GenerarXmlFactura(factura, empresa, parametros);
-            var certBytes = System.IO.File.ReadAllBytes(empresa.CertificadoPath);
+            string xmlSinFirmar;
+            try
+            {
+                xmlSinFirmar = _xml.GenerarXmlFactura(factura, empresa, parametros);
+            }
+            catch
+            {
+                // No dejamos que un fallo de serialización escape como 500 genérico.
+                return Errores.Xml.ErrorGeneracion;
+            }
+
+            byte[] certBytes;
+            try
+            {
+                certBytes = System.IO.File.ReadAllBytes(empresa.CertificadoPath);
+            }
+            catch
+            {
+                // Ruta inválida / archivo ausente / sin permisos → error tipado, no 500.
+                return Errores.Empresa.CertificadoNoAccesible;
+            }
 
             var resultado = await _orquestador.EjecutarAsync(new ParametrosEmision<Factura>
             {

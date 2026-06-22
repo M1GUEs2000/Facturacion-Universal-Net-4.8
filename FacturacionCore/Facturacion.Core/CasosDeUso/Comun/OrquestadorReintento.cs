@@ -74,7 +74,7 @@ namespace Facturacion.Core.CasosDeUso.Comun
                 var xmlBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(xmlFirmado));
                 var recepcionResult = await _sri.EnviarDocumentoAsync(xmlBase64, doc.Ambiente);
 
-                if (recepcionResult.IsError && recepcionResult.FirstError.Code != "Sri.SecuencialDuplicado")
+                if (recepcionResult.IsError && recepcionResult.FirstError.Code != Errores.Sri.CodigoSecuencialDuplicado)
                     return recepcionResult.FirstError;
 
                 doc.RegistrarEnvioSri();

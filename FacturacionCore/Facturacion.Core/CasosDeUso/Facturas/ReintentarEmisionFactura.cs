@@ -45,7 +45,16 @@ namespace Facturacion.Core.CasosDeUso.Facturas
             var parametros = await _parametros.ObtenerPorRucAsync(factura.EmpresaRuc);
             if (parametros == null) return Errores.Parametros.NoEncontrados;
 
-            var certBytes = System.IO.File.ReadAllBytes(empresa.CertificadoPath);
+            byte[] certBytes;
+            try
+            {
+                certBytes = System.IO.File.ReadAllBytes(empresa.CertificadoPath);
+            }
+            catch
+            {
+                // Ruta inválida / archivo ausente / sin permisos → error tipado, no 500.
+                return Errores.Empresa.CertificadoNoAccesible;
+            }
 
             var resultado = await _orquestador.EjecutarAsync(new ParametrosReintento<Factura>
             {

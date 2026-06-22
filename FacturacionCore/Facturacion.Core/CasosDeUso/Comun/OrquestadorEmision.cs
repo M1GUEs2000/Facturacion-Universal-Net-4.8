@@ -61,7 +61,7 @@ namespace Facturacion.Core.CasosDeUso.Comun
 
             if (recepcionResult.IsError)
             {
-                if (recepcionResult.FirstError.Code == "Sri.SecuencialDuplicado")
+                if (recepcionResult.FirstError.Code == Errores.Sri.CodigoSecuencialDuplicado)
                 {
                     // Ya enviado antes — continuar a autorización
                 }

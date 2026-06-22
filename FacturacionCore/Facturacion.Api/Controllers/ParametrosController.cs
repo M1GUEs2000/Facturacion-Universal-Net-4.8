@@ -2,7 +2,9 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Facturacion.Api.Auth;
+using Facturacion.Api.Composition;
 using Facturacion.Api.Models;
+using Facturacion.Core;
 using Facturacion.Core.Entidades;
 using Facturacion.Core.Enums;
 using Facturacion.Core.Interfaces.Repositorios;
@@ -28,11 +30,13 @@ namespace Facturacion.Api.Controllers
         [HttpPost, Route("")]
         public async Task<IHttpActionResult> Crear(CrearParametrosRequest req)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             if (req == null || string.IsNullOrWhiteSpace(req.EmpresaRuc))
-                return BadRequest("empresaRuc es obligatorio.");
+                return this.DesdeError(Errores.Parametros.EmpresaRucRequerido);
 
             if (await _parametros.ObtenerPorRucAsync(req.EmpresaRuc) != null)
-                return Conflict();
+                return this.DesdeError(Errores.Parametros.YaExisten);
 
             var parametros = ParametrosFacturacion.Crear(
                 req.EmpresaRuc, req.Estab, req.PtoEmi, req.DireccionEstablecimiento, req.ContribuyenteEspecial);
@@ -61,7 +65,7 @@ namespace Facturacion.Api.Controllers
         public async Task<IHttpActionResult> Obtener(string ruc)
         {
             var parametros = await _parametros.ObtenerPorRucAsync(ruc);
-            if (parametros == null) return NotFound();
+            if (parametros == null) return this.DesdeError(Errores.Parametros.NoEncontrados);
 
             return Ok(new
             {
